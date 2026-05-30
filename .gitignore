@@ -1,0 +1,60 @@
+# ==========================================
+# Gradle Build Directories and Artifacts
+# ==========================================
+.gradle/
+build/
+**/build/
+*.gradle.user
+local.properties
+.gradle-showcase/
+.configuration-cache/
+
+# ==========================================
+# IntelliJ IDEA Metadata and OS Files
+# ==========================================
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+**/out/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Kotlin Multiplatform & JS/Wasm Tooling
+# ==========================================
+.kotlin/
+**/node_modules/
+node_modules/
+kotlin-js-store/
+**/kotlin-js-store/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# ==========================================
+# Local Databases & Persistent Data Volumes
+# ==========================================
+**/data/
+data/
+*.mv.db
+*.trace.db
+*.db
+*.db-journal
+
+# ==========================================
+# Environment Variables & Credentials
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==========================================
+# Local Agent & CLI Tooling Metadata
+# ==========================================
+.antigravitycli/
+.antigravitycli

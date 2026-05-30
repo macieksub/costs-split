@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: splitcosts-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: splitcosts
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: strongpassword123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d splitcosts"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: splitcosts-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/splitcosts
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=strongpassword123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: splitcosts-frontend
+    restart: always
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
