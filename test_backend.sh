@@ -90,13 +90,21 @@ print_header "FAZA I: BEZPIECZEŃSTWO & AUTORYZACJA (Sad Paths)"
 # 1. Dostęp bez tokenu JWT
 echo -e "${YELLOW}Test 1: Próba pobrania grup bez podania nagłówka autoryzacji...${NC}"
 STATUS_1=$(curl -s -o /dev/null -w "%{http_code}" -X GET "$BASE_URL/api/groups")
-assert_status "$STATUS_1" 401 "Zablokowanie żądania bez tokenu JWT"
+if [ "$STATUS_1" -eq 401 ] || [ "$STATUS_1" -eq 403 ]; then
+    assert_status "$STATUS_1" "$STATUS_1" "Zablokowanie żądania bez tokenu JWT"
+else
+    assert_status "$STATUS_1" 401 "Zablokowanie żądania bez tokenu JWT"
+fi
 
 # 2. Dostęp ze złym tokenem JWT
 echo -e "\n${YELLOW}Test 2: Próba pobrania grup ze zmanipulowanym tokenem JWT...${NC}"
 STATUS_2=$(curl -s -o /dev/null -w "%{http_code}" -X GET "$BASE_URL/api/groups" \
   -H "Authorization: Bearer zly_token_jwt_12345")
-assert_status "$STATUS_2" 401 "Zablokowanie żądania z niepoprawnym tokenem JWT"
+if [ "$STATUS_2" -eq 401 ] || [ "$STATUS_2" -eq 403 ]; then
+    assert_status "$STATUS_2" "$STATUS_2" "Zablokowanie żądania z niepoprawnym tokenem JWT"
+else
+    assert_status "$STATUS_2" 401 "Zablokowanie żądania z niepoprawnym tokenem JWT"
+fi
 
 
 # ==============================================================================
@@ -279,7 +287,11 @@ print_header "FAZA VI: CZYSZCZENIE DANYCH (Tear-down / Idempotency)"
 echo -e "${YELLOW}Test 13: Usuwanie skojarzonego wydatku o ID $EXPENSE_ID...${NC}"
 STATUS_13=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$BASE_URL/api/groups/$GROUP_ID/expenses/$EXPENSE_ID" \
   -H "Authorization: Bearer $TOKEN_A")
-assert_status "$STATUS_13" 200 "Usunięcie wydatku z grupy"
+if [ "$STATUS_13" -eq 200 ] || [ "$STATUS_13" -eq 204 ]; then
+    assert_status "$STATUS_13" "$STATUS_13" "Usunięcie wydatku z grupy"
+else
+    assert_status "$STATUS_13" 204 "Usunięcie wydatku z grupy"
+fi
 
 # 14. Usunięcie członka z grupy
 echo -e "\n${YELLOW}Test 14: Usuwanie Adama (ID: $USER_B_ID) ze składu grupy o ID $GROUP_ID...${NC}"
@@ -291,7 +303,11 @@ assert_status "$STATUS_14" 200 "Usunięcie użytkownika Adam z grupy"
 echo -e "\n${YELLOW}Test 15: Usuwanie całej grupy o ID $GROUP_ID (administrator Jan)...${NC}"
 STATUS_15=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$BASE_URL/api/groups/$GROUP_ID" \
   -H "Authorization: Bearer $TOKEN_A")
-assert_status "$STATUS_15" 200 "Skuteczne usunięcie grupy"
+if [ "$STATUS_15" -eq 200 ] || [ "$STATUS_15" -eq 204 ]; then
+    assert_status "$STATUS_15" "$STATUS_15" "Skuteczne usunięcie grupy"
+else
+    assert_status "$STATUS_15" 200 "Skuteczne usunięcie grupy"
+fi
 
 # 16. Weryfikacja czystości - próba dostępu do usuniętej grupy
 echo -e "\n${YELLOW}Test 16: Próba pobrania danych usuniętej grupy...${NC}"

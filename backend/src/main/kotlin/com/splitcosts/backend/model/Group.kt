@@ -26,7 +26,13 @@ class Group(
         joinColumns = [JoinColumn(name = "group_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
-    var members: MutableSet<User> = mutableSetOf()
+    var members: MutableSet<User> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "group", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var expenses: MutableList<Expense> = mutableListOf(),
+
+    @OneToMany(mappedBy = "group", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var settlements: MutableList<Settlement> = mutableListOf()
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
