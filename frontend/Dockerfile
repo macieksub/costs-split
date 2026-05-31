@@ -1,6 +1,9 @@
 # Stage 1: Build stage
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
+
+# Install libatomic1 required by Node.js 25
+RUN apt-get update && apt-get install -y libatomic1 && rm -rf /var/lib/apt/lists/*
 
 # Copy gradle and project files
 COPY gradlew .
