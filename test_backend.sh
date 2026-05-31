@@ -118,7 +118,7 @@ echo -e "\n${YELLOW}[Krok 4/10] Tworzenie nowej grupy rozliczeniowej 'Bieszczady
 GROUP_RESP=$(curl -s -X POST "$BASE_URL/api/groups" \
   -H "Authorization: Bearer $TOKEN_A" \
   -H "Content-Type: application/json" \
-  -d '{"name":"Bieszczady 2026","description":"Wspólny wyjazd majowy w góry"}')
+  -d '{"name":"Bieszczady 2026","description":"Wspolny wyjazd majowy w gory"}')
 echo -e "Odpowiedź serwera: $GROUP_RESP"
 
 GROUP_ID=$(extract_json_field "$GROUP_RESP" "id")
