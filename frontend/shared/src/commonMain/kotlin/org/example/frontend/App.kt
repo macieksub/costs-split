@@ -9,6 +9,16 @@ import org.example.frontend.ui.screens.*
 @Composable
 @Preview
 fun App() {
+    // Try auto-login once on startup
+    LaunchedEffect(Unit) {
+        val hasSession = org.example.frontend.api.ApiClient.loadSession()
+        if (hasSession) {
+            AppState.currentUser = org.example.frontend.api.ApiClient.currentUser
+            AppState.backStack.clear()
+            AppState.backStack.add(Screen.GroupList)
+        }
+    }
+
     // Router based on AppState backstack
     val currentScreen = AppState.backStack.lastOrNull() ?: Screen.Login
 

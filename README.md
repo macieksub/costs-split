@@ -34,22 +34,50 @@ Dzięki pełnej konteneryzacji całego projektu, możesz uruchomić kompletną a
 
 ---
 
-## 🧪 Przykładowe Dane do Testów (Baza nie jest pusta!)
+## 🧪 Scenariusze Testowe i Dane Początkowe (Baza nie jest pusta!)
 
-Przy pierwszym uruchomieniu projektu baza PostgreSQL jest automatycznie uzupełniana o zestaw zbalansowanych danych testowych przez nasz komponent `DatabaseInitializer`. Możesz od razu zalogować się na jedno z kont:
+Przy pierwszym uruchomieniu projektu baza danych PostgreSQL jest automatycznie zasiedlana spójnym zestawem danych testowych za pomocą komponentu `DatabaseInitializer`. Dzięki temu aplikacja od razu po uruchomieniu prezentuje zaawansowane zależności finansowe, bilanse oraz uproszczone długi.
 
-* **Loginy:** `janek`, `adam`, `kasia`
-* **Hasło dla wszystkich:** `password123`
+Do zalogowania służą **trzy dedykowane konta testowe** (hasło dla wszystkich to: **`password123`**):
 
-### Co znajduje się w bazie po starcie?
-* **Grupa 1:** *Wyjazd na Mazury ⛵* (członkowie: Janek, Adam, Kasia).
-  * Wydatek: "Paliwo do auta" (180 PLN, zapłacił Janek, podzielone po równo).
-  * Wydatek: "Zakupy w Biedronce" (120 PLN, zapłacił Adam, podzielone po równo).
-  * Wydatek: "Wypożyczenie łódki" (90 PLN, zapłaciła Kasia, podzielone po równo).
-  * Rozliczenie: Adam oddał Jankowi 20 PLN (spłata zatwierdzona przez Janka).
-  * **Status Bilanse:** Kasia wisi Jankowi 30 PLN oraz Kasia wisi Adamowi 10 PLN (wyliczone przez algorytm upraszczania długów).
-* **Grupa 2:** *Wspólne Mieszkanie 🏠* (członkowie: Janek, Adam).
-  * Wydatek: "Internet światłowodowy" (80 PLN, zapłacił Adam, podzielone po równo).
+### 🔑 Wykaz Kont Testowych i Ich Rola w Scenariuszach:
+
+1. **`janek` (Login: `janek`) - GŁÓWNY WIERZYCIEL GRUPY "MAZURY" & ADMINISTRATOR**
+   * **Rola:** Administrator grupy *Wyjazd na Mazury*. Osoba o największym saldzie dodatnim.
+   * **Scenariusz testowy:** Zaloguj się jako `janek`, aby zweryfikować **panel zarządzania grupą** (opcja zapraszania i usuwania członków, usuwanie całej grupy) oraz **moduł akceptacji spłat** (Janek widzi spłaty oczekujące na jego zatwierdzenie i jako jedyny ma uprawnienia do kliknięcia przycisku "Potwierdź").
+
+2. **`adam` (Login: `adam`) - DEBTER / WIERZYCIEL POŚREDNI & ADMINISTRATOR "MIESZKANIA"**
+   * **Rola:** Płatnik części wydatków w grupie *Wyjazd na Mazury* (zakupy), a także administrator i jedyny płatnik w grupie *Wspólne Mieszkanie*.
+   * **Scenariusz testowy:** Zaloguj się jako `adam`, aby zobaczyć, jak system poprawnie oblicza salda pośrednie (Adam ma mały dług u Janka, ale Kasia wisi mu pieniądze). Zobaczysz też pełny bilans i historię w grupie *Wspólne Mieszkanie*.
+
+3. **`kasia` (Login: `kasia`) - GŁÓWNY DŁUŻNIK GRUPY "MAZURY"**
+   * **Rola:** Osoba o najwyższym długu w grupie *Wyjazd na Mazury* (wydała najmniej, wisi pieniądze Jankowi i Adamowi).
+   * **Scenariusz testowy:** Zaloguj się jako `kasia`, aby zobaczyć **czerwony pasek ujemnego bilansu** oraz **moduł szybkich spłat długów**. Kliknij przycisk **"Rozlicz"** przy sugerowanym długu wobec Janka (30 PLN), aby automatycznie wygenerować transakcję spłaty. Po wysłaniu spłaty zobaczysz, że transakcja ma status *Oczekuje* na potwierdzenie przez Janka.
+
+---
+
+### 📊 Dokładny Stan Początkowy Bazy Danych po Starcie:
+
+* **Grupa 1: "Wyjazd na Mazury ⛵"** (Administrator: Janek, Członkowie: Janek, Adam, Kasia)
+  * **Wydatki (koszt 180 + 120 + 90 = 390 PLN, czyli 130 PLN na osobę):**
+    * *Paliwo do auta:* 180 PLN (opłacił **Janek**, podział równy po 60 PLN).
+    * *Zakupy w Biedronce:* 120 PLN (opłacił **Adam**, podział równy po 40 PLN).
+    * *Wypożyczenie łódki:* 90 PLN (opłaciła **Kasia**, podział równy po 30 PLN).
+  * **Zatwierdzone spłaty:** Adam przelał Jankowi 20 PLN (spłata zaakceptowana przez Janka).
+  * **Wpływ na bilanse netto:**
+    * **Janek:** `+30.00 PLN` (Początkowy bilans `+50.00` pomniejszony o `20.00` otrzymanej spłaty).
+    * **Adam:** `+10.00 PLN` (Początkowy bilans `-10.00` powiększony o `20.00` wykonanej spłaty).
+    * **Kasia:** `-40.00 PLN` (Brak zarejestrowanych spłat).
+  * **Uproszczona sieć długów (Simplify Debts):**
+    * Kasia wisi **Jankowi**: `30.00 PLN`
+    * Kasia wisi **Adamowi**: `10.00 PLN`
+    *(Algorytm idealnie zredukował długi do zaledwie 2 transakcji!)*
+
+* **Grupa 2: "Wspólne Mieszkanie 🏠"** (Administrator: Adam, Członkowie: Janek, Adam)
+  * **Wydatki:**
+    * *Internet światłowodowy:* 80 PLN (opłacił **Adam**, podział równy po 40 PLN).
+  * **Uproszczona sieć długów:**
+    * Janek wisi **Adamowi**: `40.00 PLN`
 
 ---
 

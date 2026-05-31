@@ -39,6 +39,12 @@ object ApiClient {
         }.body()
         token = response.token
         currentUser = response.user
+        
+        // Persist session
+        org.example.frontend.util.saveLocalStorage("auth_token", response.token)
+        val userJson = Json.encodeToString(UserDto.serializer(), response.user)
+        org.example.frontend.util.saveLocalStorage("auth_user", userJson)
+        
         return response
     }
 
@@ -49,6 +55,12 @@ object ApiClient {
         }.body()
         token = response.token
         currentUser = response.user
+        
+        // Persist session
+        org.example.frontend.util.saveLocalStorage("auth_token", response.token)
+        val userJson = Json.encodeToString(UserDto.serializer(), response.user)
+        org.example.frontend.util.saveLocalStorage("auth_user", userJson)
+        
         return response
     }
 
@@ -63,6 +75,23 @@ object ApiClient {
     fun logout() {
         token = null
         currentUser = null
+        org.example.frontend.util.removeLocalStorage("auth_token")
+        org.example.frontend.util.removeLocalStorage("auth_user")
+    }
+
+    fun loadSession(): Boolean {
+        val savedToken = org.example.frontend.util.loadLocalStorage("auth_token")
+        val savedUserJson = org.example.frontend.util.loadLocalStorage("auth_user")
+        if (!savedToken.isNullOrBlank() && savedToken != "null" && !savedUserJson.isNullOrBlank() && savedUserJson != "null") {
+            try {
+                token = savedToken
+                currentUser = Json.decodeFromString(UserDto.serializer(), savedUserJson)
+                return true
+            } catch (e: Exception) {
+                logout()
+            }
+        }
+        return false
     }
 
     // GROUPS
